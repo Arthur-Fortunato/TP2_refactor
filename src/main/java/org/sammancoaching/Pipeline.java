@@ -9,6 +9,7 @@ public class Pipeline {
     private final Config config;
     private final Emailer emailer;
     private final Logger log;
+    private static final String SUCCESS = "success";
 
     public Pipeline(Config config, Emailer emailer, Logger log) {
         this.config = config;
@@ -20,18 +21,7 @@ public class Pipeline {
         boolean testsPassed;
         boolean deploySuccessful;
 
-        if (project.hasTests()) {
-            if ("success".equals(project.runTests())) {
-                log.info("Tests passed");
-                testsPassed = true;
-            } else {
-                log.error("Tests failed");
-                testsPassed = false;
-            }
-        } else {
-            log.info("No tests");
-            testsPassed = true;
-        }
+        testsPassed = areTestsPassing(project);
 
         if (testsPassed) {
             if ("success".equals(project.deploy())) {
@@ -59,5 +49,18 @@ public class Pipeline {
         } else {
             log.info("Email disabled");
         }
+    }
+
+    private boolean areTestsPassing(Project project) {
+        if (!project.hasTests()) {
+            log.info("No tests");
+            return true;
+        }
+        if (SUCCESS.equals(project.runTests())) {
+            log.info("Tests passed");
+            return true;
+        }
+        log.error("Tests failed");
+        return false;
     }
 }
