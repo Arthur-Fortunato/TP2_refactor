@@ -20,21 +20,7 @@ public class Pipeline {
     public void run(Project project) {
         boolean testsPassed = areTestsPassing(project);
         boolean deploySuccessful = isDeploySuccessful(project, testsPassed);
-
-        if (config.sendEmailSummary()) {
-            log.info("Sending email");
-            if (testsPassed) {
-                if (deploySuccessful) {
-                    emailer.send("Deployment completed successfully");
-                } else {
-                    emailer.send("Deployment failed");
-                }
-            } else {
-                emailer.send("Tests failed");
-            }
-        } else {
-            log.info("Email disabled");
-        }
+        sendEmail(testsPassed, deploySuccessful);
     }
 
     private boolean areTestsPassing(Project project) {
@@ -60,5 +46,21 @@ public class Pipeline {
         }
         log.error("Deployment failed");
         return false;
+    }
+
+    private void sendEmail(boolean testsPassed, boolean deploySuccessful) {
+        if (!config.sendEmailSummary()) {
+            log.info("Email disabled");
+        }
+        log.info("Sending email");
+        if (!testsPassed) {
+            emailer.send("Tests failed");
+            return;
+        }
+        if (deploySuccessful) {
+            emailer.send("Deployment completed successfully");
+        } else {
+            emailer.send("Deployment failed");
+        }
     }
 }
