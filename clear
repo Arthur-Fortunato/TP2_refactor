@@ -1,0 +1,27 @@
+warning: in the working copy of 'src/main/java/org/sammancoaching/Pipeline.java', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/src/main/java/org/sammancoaching/Pipeline.java b/src/main/java/org/sammancoaching/Pipeline.java[m
+[1mindex 756df1d..f30bcf6 100644[m
+[1m--- a/src/main/java/org/sammancoaching/Pipeline.java[m
+[1m+++ b/src/main/java/org/sammancoaching/Pipeline.java[m
+[36m@@ -73,4 +73,20 @@[m [mpublic class Pipeline {[m
+         log.error("Deployment failed");[m
+         return false;[m
+     }[m
+[32m+[m
+[32m+[m[32m    private void sendEmail(boolean testsPassed, boolean deploySuccessful) {[m
+[32m+[m[32m        if (!config.sendEmailSummary()) {[m
+[32m+[m[32m            log.info("Email disabled");[m
+[32m+[m[32m        }[m
+[32m+[m[32m        log.info("Sending email");[m
+[32m+[m[32m        if (!testsPassed) {[m
+[32m+[m[32m            emailer.send("Tests failed");[m
+[32m+[m[32m            return;[m
+[32m+[m[32m        }[m
+[32m+[m[32m        if (deploySuccessful) {[m
+[32m+[m[32m            emailer.send("Deployment completed successfully");[m
+[32m+[m[32m        } else {[m
+[32m+[m[32m            emailer.send("Deployment failed");[m
+[32m+[m[32m        }[m
+[32m+[m[32m    }[m
+ }[m
+\ No newline at end of file[m
